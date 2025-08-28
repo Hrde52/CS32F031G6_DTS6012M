@@ -30,7 +30,7 @@
 ;   <o> Stack Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
-Stack_Size		EQU     0x400
+Stack_Size      EQU     0x00000400
 
                 AREA    STACK, NOINIT, READWRITE, ALIGN=3
 Stack_Mem       SPACE   Stack_Size
@@ -41,7 +41,7 @@ __initial_sp
 ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
 ; </h>
 
-Heap_Size      EQU     0x200
+Heap_Size       EQU     0x00000200
 
                 AREA    HEAP, NOINIT, READWRITE, ALIGN=3
 __heap_base
@@ -58,10 +58,10 @@ __heap_limit
                 EXPORT  __Vectors_End
                 EXPORT  __Vectors_Size
 
-__Vectors       DCD     __initial_sp                   ; Top of Stack 1
-                DCD     Reset_Handler                  ; Reset Handler 2
-                DCD     NMI_Handler                    ; NMI Handler3
-                DCD     HardFault_Handler              ; Hard Fault Handler4
+__Vectors       DCD     __initial_sp                   ; Top of Stack
+                DCD     Reset_Handler                  ; Reset Handler
+                DCD     NMI_Handler                    ; NMI Handler
+                DCD     HardFault_Handler              ; Hard Fault Handler
                 DCD     0                              ; Reserved
                 DCD     0                              ; Reserved
                 DCD     0                              ; Reserved
@@ -69,43 +69,44 @@ __Vectors       DCD     __initial_sp                   ; Top of Stack 1
                 DCD     0                              ; Reserved
                 DCD     0                              ; Reserved
                 DCD     0                              ; Reserved
-                DCD     SVC_Handler                    ; SVCall Handler5
+                DCD     SVC_Handler                    ; SVCall Handler
                 DCD     0                              ; Reserved
                 DCD     0                              ; Reserved
-                DCD     PendSV_Handler                 ; PendSV Handler6
-                DCD     SysTick_Handler                ; SysTick Handler7
+                DCD     PendSV_Handler                 ; PendSV Handler
+                DCD     SysTick_Handler                ; SysTick Handler
 
                 ; External Interrupts
-                DCD     WWDG_IRQHandler                ; Window Watchdog  1
-                DCD     PVD_IRQHandler                 ; PVD through EXTI Line detect 2 
-                DCD     RTC_IRQHandler                 ; RTC through EXTI Line 3 
-                DCD     FLASH_IRQHandler               ; FLASH 4
-                DCD     RCC_IRQHandler                 ; RCC 5
-                DCD     EXTI0_1_IRQHandler             ; EXTI Line 0 and 1  6
-                DCD     EXTI2_3_IRQHandler             ; EXTI Line 2 and 3  7
-                DCD     EXTI4_15_IRQHandler            ; EXTI Line 4 to 15  8
-                DCD     0                              ; Reserved  9
-                DCD     DMA1_Channel1_IRQHandler       ; DMA1 Channel 1  10
+                DCD     WWDG_IRQHandler                ; Window Watchdog
+                DCD     PVD_IRQHandler                 ; PVD through EXTI Line detect
+                DCD     RTC_IRQHandler                 ; RTC through EXTI Line
+                DCD     FLASH_IRQHandler               ; FLASH
+                DCD     RCC_IRQHandler                 ; RCC
+                DCD     EXTI0_1_IRQHandler             ; EXTI Line 0 and 1
+                DCD     EXTI2_3_IRQHandler             ; EXTI Line 2 and 3
+                DCD     EXTI4_15_IRQHandler            ; EXTI Line 4 to 15
+                DCD     0                              ; Reserved
+                DCD     DMA1_Channel1_IRQHandler       ; DMA1 Channel 1
                 DCD     DMA1_Channel2_3_IRQHandler     ; DMA1 Channel 2 and Channel 3
                 DCD     DMA1_Channel4_5_IRQHandler     ; DMA1 Channel 4 and Channel 5
                 DCD     ADC1_IRQHandler                ; ADC1 
                 DCD     TIM1_BRK_UP_TRG_COM_IRQHandler ; TIM1 Break, Update, Trigger and Commutation
-                DCD     TIM1_CC_IRQHandler             ; TIM1 Capture Compare   15
+                DCD     TIM1_CC_IRQHandler             ; TIM1 Capture Compare
                 DCD     TIM2_IRQHandler                ; TIM2
                 DCD     TIM3_IRQHandler                ; TIM3
-                DCD     0                              ; Reserved
+                DCD     TIM6_IRQHandler                ; TIM6
                 DCD     0                              ; Reserved
                 DCD     TIM14_IRQHandler               ; TIM14
-                DCD     0                              ; Reserved
+                DCD     TIM15_IRQHandler               ; TIM15
                 DCD     TIM16_IRQHandler               ; TIM16
                 DCD     TIM17_IRQHandler               ; TIM17
                 DCD     I2C1_IRQHandler                ; I2C1
-                DCD     0                              ; Reserved
+                DCD     I2C2_IRQHandler                ; I2C2
                 DCD     SPI1_IRQHandler                ; SPI1
-                DCD     0                              ; Reserved
-                DCD     USART1_IRQHandler              ; USART1  106-79+1=28
-				DCD     USART6_IRQHandler            ; USART6
-
+                DCD     SPI2_IRQHandler                ; SPI2
+                DCD     USART1_IRQHandler              ; USART1
+                DCD     USART2_IRQHandler              ; USART2
+                DCD     USART3_8_IRQHandler            ; USART6_8
+                
 __Vectors_End
 
 __Vectors_Size  EQU  __Vectors_End - __Vectors
@@ -165,13 +166,19 @@ Default_Handler PROC
                 EXPORT  TIM1_CC_IRQHandler             [WEAK]
                 EXPORT  TIM2_IRQHandler                [WEAK]
                 EXPORT  TIM3_IRQHandler                [WEAK]
+                EXPORT  TIM6_IRQHandler                [WEAK]                
                 EXPORT  TIM14_IRQHandler               [WEAK]
+                EXPORT  TIM15_IRQHandler               [WEAK]
                 EXPORT  TIM16_IRQHandler               [WEAK]
                 EXPORT  TIM17_IRQHandler               [WEAK]
                 EXPORT  I2C1_IRQHandler                [WEAK]
+                EXPORT  I2C2_IRQHandler                [WEAK]
                 EXPORT  SPI1_IRQHandler                [WEAK]
+                EXPORT  SPI2_IRQHandler                [WEAK]
                 EXPORT  USART1_IRQHandler              [WEAK]
-				EXPORT  USART6_IRQHandler              [WEAK]
+                EXPORT  USART2_IRQHandler              [WEAK]
+                EXPORT  USART3_8_IRQHandler            [WEAK]
+
 
 WWDG_IRQHandler
 PVD_IRQHandler
@@ -189,13 +196,18 @@ TIM1_BRK_UP_TRG_COM_IRQHandler
 TIM1_CC_IRQHandler
 TIM2_IRQHandler
 TIM3_IRQHandler
+TIM6_IRQHandler
 TIM14_IRQHandler
+TIM15_IRQHandler
 TIM16_IRQHandler
 TIM17_IRQHandler
 I2C1_IRQHandler
+I2C2_IRQHandler
 SPI1_IRQHandler
+SPI2_IRQHandler
 USART1_IRQHandler
-USART6_IRQHandler
+USART2_IRQHandler
+USART3_8_IRQHandler
 
                 B       .
 

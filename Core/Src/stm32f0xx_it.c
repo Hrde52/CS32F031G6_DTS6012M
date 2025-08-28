@@ -155,14 +155,21 @@ void USART1_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-void USART6_IRQHandler(void)
+
+void USART3_8_IRQHandler(void)
 {
-  /* USER CODE BEGIN USART1_IRQn 0 */
-
-  /* USER CODE END USART1_IRQn 0 */
+  
   HAL_UART_IRQHandler(&huart6);
-  /* USER CODE BEGIN USART1_IRQn 1 */
+	
+//	if(USART6->ISR & USART_ISR_RXNE) {          
+//        uint8_t data = ((USART6)->RDR);             // ????(??????)
+//        if(rxPDAIndex < 30) {
+//            rxBuffPDA[rxPDAIndex++] = data;
+//        } else {           
+//            rxPDAIndex = 0; 
+//        }
+//    }
+			
 
-  /* USER CODE END USART1_IRQn 1 */
 }
 /* USER CODE END 1 */

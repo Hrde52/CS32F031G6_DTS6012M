@@ -79,7 +79,8 @@ void Error_Handler(void);
 #define DTS6012M_RX_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
-
+extern uint8_t rxBuffPDA[30];
+extern uint16_t rxPDAIndex;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

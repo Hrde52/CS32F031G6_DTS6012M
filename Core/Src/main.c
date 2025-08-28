@@ -113,10 +113,23 @@ int main(void)
 	dts6012_start();
 	HAL_Delay(50);
 	dts6012_start();
+	HAL_Delay(50);
+	dts6012_start();
 	HAL_UART_Receive_IT(&huart1, &rxBuffDTS[rxIndex], 1);		
 	
-//	MX_USART6_UART_Init();
-//	HAL_UART_Receive_IT(&huart6, &rxBuffPDA[rxPDAIndex], 1);		
+	MX_USART6_UART_Init();
+	//USART6_UART_Init();
+	HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 0);
+	HAL_Delay(20);
+//	 USART6->CR1 |= USART_CR1_RXNEIE;  
+//	USART6->CR1 |= USART_CR1_UE;      
+//USART6->
+	HAL_UART_Receive_IT(&huart6, &rxBuffPDA[rxPDAIndex], 1);
+	
+//	HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
+//	HAL_Delay(20);
+//	uint8_t data[4] = {1,2,3,4};
+//	HAL_UART_Transmit_IT(&huart6, data, 4);	
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -238,7 +251,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			HAL_UART_Receive_IT(&huart1, &rxBuffDTS[rxIndex], 1);
 
 		}
-		if (huart->Instance == USART6) 
+		
+		else if (huart->Instance == USART6) 
 		{
 			if(rxPDAIndex <= 29)
 			{
@@ -251,6 +265,20 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 			HAL_UART_Receive_IT(&huart6, &rxBuffPDA[rxPDAIndex], 1);	
 		}
 			
+}
+
+void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
+{
+  if(huart->Instance == USART6)
+  {
+    if(huart->ErrorCode & HAL_UART_ERROR_ORE) // ????
+    {
+      HAL_UART_Receive_IT(&huart6, &rxBuffPDA[rxPDAIndex], 1);
+    }
+    
+
+    huart->ErrorCode = HAL_UART_ERROR_NONE;
+  }
 }
 /* USER CODE END 4 */
 

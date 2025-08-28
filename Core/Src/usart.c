@@ -97,9 +97,11 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
 
   /* USER CODE END USART1_MspInit 0 */
     /* USART1 clock enable */
-    __HAL_RCC_USART6_CLK_ENABLE();   //
- 
-    __HAL_RCC_GPIOA_CLK_ENABLE();
+
+  // Clock Config
+    __HAL_RCC_GPIOA_CLK_ENABLE();    
+		//__HAL_RCC_USART6_CLK_ENABLE();   //
+		RCC->APB2ENR |= RCC_APB2ENR_USART6EN;  
     /**USART1 GPIO Configuration
 			PA4    ------> USART6_TX
 			PB5    ------> USART6_RX
@@ -111,11 +113,15 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     GPIO_InitStruct.Alternate = GPIO_AF5_USART6;   // 
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
+		
     /* USART1 interrupt Init */
     HAL_NVIC_SetPriority(USART6_IRQn, 0, 0);
     HAL_NVIC_EnableIRQ(USART6_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
-
+	
+//		USART6->CR1 |= USART_CR1_TE | USART_CR1_RE;
+//		USART6->CR1 |= USART_CR1_RXNEIE;           
+//    USART6->CR1 |= USART_CR1_UE;               
   /* USER CODE END USART1_MspInit 1 */
   }
 
@@ -198,7 +204,7 @@ void MX_USART6_UART_Init(void)
 
   /* USER CODE END USART1_Init 1 */
   huart6.Instance = USART6;
-  huart6.Init.BaudRate = 38400;
+  huart6.Init.BaudRate = 115200;
   huart6.Init.WordLength = UART_WORDLENGTH_8B;
   huart6.Init.StopBits = UART_STOPBITS_1;
   huart6.Init.Parity = UART_PARITY_NONE;
@@ -207,6 +213,8 @@ void MX_USART6_UART_Init(void)
   huart6.Init.OverSampling = UART_OVERSAMPLING_16;
   huart6.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
   huart6.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+	
+
 	
   if (HAL_UART_Init(&huart6) != HAL_OK)
   {
