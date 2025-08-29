@@ -50,7 +50,7 @@ int RS485_PDA_Transmit(uint8_t *data, uint16_t len);
 
 extern uint8_t rxBuffDTS[30];
 extern uint16_t rxIndexDTS;
-
+extern uint8_t dataIsReceived;
 extern uint8_t rs485PDARxCpltFlag;
 extern uint8_t rxDataBuffPDA[4];
 extern uint16_t RxElevatorCnt;

@@ -32,6 +32,7 @@ extern "C" {
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include <stdio.h>
+#include "rs485.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
@@ -79,7 +80,11 @@ void Error_Handler(void);
 #define DTS6012M_RX_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
+#define RX_BUF_SIZE 30
 
+extern uint8_t rxBuf[RX_BUF_SIZE];
+extern uint8_t dataReceived; 
+extern uint16_t receivedLength;
 /* USER CODE END Private defines */
 
 #ifdef __cplusplus

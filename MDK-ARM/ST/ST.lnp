@@ -12,6 +12,7 @@
 "st\sensorparatable.o"
 "st\stmflash.o"
 "st\sensorapplogic.o"
+"st\dma.o"
 "st\stm32f0xx_hal_rtc.o"
 "st\stm32f0xx_hal_rtc_ex.o"
 "st\stm32f0xx_hal_rcc.o"

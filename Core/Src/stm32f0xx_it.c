@@ -55,6 +55,7 @@
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
+extern DMA_HandleTypeDef hdma_usart1_rx;
 extern UART_HandleTypeDef huart1;
 /* USER CODE BEGIN EV */
 extern UART_HandleTypeDef huart6;
@@ -141,6 +142,20 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /**
+  * @brief This function handles DMA1 channel 2 and 3 interrupts.
+  */
+void DMA1_Channel2_3_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Channel2_3_IRQn 0 */
+
+  /* USER CODE END DMA1_Channel2_3_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_usart1_rx);
+  /* USER CODE BEGIN DMA1_Channel2_3_IRQn 1 */
+
+  /* USER CODE END DMA1_Channel2_3_IRQn 1 */
+}
+
+/**
   * @brief This function handles USART1 global interrupt / USART1 wake-up interrupt through EXTI line 25.
   */
 void USART1_IRQHandler(void)
@@ -152,6 +167,43 @@ void USART1_IRQHandler(void)
   /* USER CODE BEGIN USART1_IRQn 1 */
 
   /* USER CODE END USART1_IRQn 1 */
+	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))
+	{
+			
+			__HAL_UART_CLEAR_IDLEFLAG(&huart1);
+			
+			HAL_UART_DMAStop(&huart1);
+			
+			receivedLength = RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx);
+			
+			
+			if (receivedLength > 0 )
+			{
+					
+					if (rxBuf[0] == 0xA5) 
+					{
+							ProcessData(rxBuf, receivedLength);  //receivedLength
+					}
+					
+					else
+					{
+							for (int i = 1; i < receivedLength; i++)
+							{
+									if (rxBuf[i] == 0xA5 && (receivedLength - i) >= 23)
+									{
+											ProcessData(&rxBuf[i], 23);
+											break;
+									}
+							}
+					}
+			}
+			else if(receivedLength == 0)
+			{
+				ProcessData(rxBuf, 23);  
+			}
+			
+			HAL_UART_Receive_DMA(&huart1, rxBuf, RX_BUF_SIZE);
+	}
 }
 
 /* USER CODE BEGIN 1 */

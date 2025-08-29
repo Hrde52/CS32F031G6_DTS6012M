@@ -198,6 +198,9 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart)
 
 void ProcessData(uint8_t *data, uint16_t length)
 {
+//	dataIsReceived = 0;
+//	rxIndexDTS = 0;
+//	headerIsFoundFlag = 0;
 	if((data[0]==0xA5)&&(data[1]==0x03)&&(data[2]==0x20))
 	{
 		dts6012_data->firstPeakDistance	= (data[14]<<8) | (data[13]);

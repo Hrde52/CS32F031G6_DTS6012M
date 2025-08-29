@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dma.h"
 #include "rtc.h"
 #include "usart.h"
 #include "gpio.h"
@@ -25,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "rs485.h"
+#include <string.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,7 +47,9 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+uint8_t rxBuf[RX_BUF_SIZE];
+uint8_t dataReceived = 0; 
+uint16_t receivedLength = 0;
 
 /* USER CODE END PV */
 
@@ -89,6 +93,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+	MX_DMA_Init();
   MX_RTC_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
@@ -107,7 +112,11 @@ int main(void)
 	dts6012_start();
 	HAL_Delay(50);
 	dts6012_start();
-	HAL_UART_Receive_IT(&huart1, &rxBuffDTS[rxIndexDTS], 1);		
+	
+	//HAL_UART_Receive_IT(&huart1, &rxBuffDTS[rxIndexDTS], 1);
+	memset(rxBuf, 0, RX_BUF_SIZE);
+	HAL_UART_Receive_DMA(&huart1, rxBuf, RX_BUF_SIZE);
+  __HAL_UART_ENABLE_IT(&huart1, UART_IT_IDLE);	
 	
 	MX_USART6_UART_Init();
 	
@@ -130,9 +139,10 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-		//HAL_Delay(1000);
-//		uint8_t txBuff[10] = {1,2,3,4,5,6,7,8,9,0};
-//		HAL_UART_Transmit(&huart6, txBuff, 10, 100);
+//		if(dataIsReceived == 1 )
+//		{
+//			ProcessData(rxBuffDTS, 23);
+//		}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

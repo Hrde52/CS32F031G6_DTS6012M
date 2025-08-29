@@ -190,7 +190,7 @@ void HandleHandshake(SensorProtocol *pkt) {
     uint8_t *data3 = &resp_data[resp->l1];
     uint16_t offset = 0;
     data3[offset++] = 2;
-    data3[offset++] = m_sensorType111;
+    data3[offset++] = 1;  //m_sensorType111
     data3[offset++] = 0;
 
     // DATA3
@@ -265,11 +265,11 @@ void HandleHeartbeat(SensorProtocol *pkt) {
    
     SensorProtocol *resp = (SensorProtocol *)txBuffer2;
     resp->head = HEADER;
-    resp->sj = 0x2234; // ????????? GenerateRandom();
+    resp->sj = 0x2234; // GenerateRandom();
     resp->version = 0X01;
     resp->cmd = HEARTBEAT_CMD;
 
-    // ???DATA1???��????????PDA?????
+    // DATA1
     resp->l1 = 2;
     uint8_t *resp_data = resp->data1;
     uint16_t offset = 0;
@@ -278,7 +278,7 @@ void HandleHeartbeat(SensorProtocol *pkt) {
 //    if (returnSensorType != m_sensorType111) {
 //        resp_data[offset++] = 0;
 //    } else {
-        resp_data[offset++] = m_sensorType111;
+        resp_data[offset++] = 1;  // m_sensorType111
 //    }
     resp_data[offset++] = 0;
 
@@ -316,7 +316,7 @@ void HandleHeartbeat(SensorProtocol *pkt) {
 
     
     resp_data[offset++] = 0;
-    resp_data[offset++] = 1; // ?????????byte15
+    resp_data[offset++] = 1; // byte15
     resp_data[offset++] = ObjectIsDetectedFlag;
     resp_data[offset++] = IO_ND06 | IO_dts6012;
     offset += 3;
@@ -375,7 +375,7 @@ void HandleHeartbeat(SensorProtocol *pkt) {
     // uint8_t step = 9;
     for (uint8_t i = 0; i < 4; i++) {
         for (uint8_t j = 0; j < 4; j++) {
-            pixel_dist = 0;
+            pixel_dist = i+j;
             WriteU16LittleEndian(&resp_data[offset], pixel_dist);
             offset += 2;
         }
@@ -385,7 +385,7 @@ void HandleHeartbeat(SensorProtocol *pkt) {
     uint32_t pixel_amp;
     for (uint8_t i = 0; i < 4; i++) {
         for (uint8_t j = 0; j < 4; j++) {
-            pixel_amp = 0;
+            pixel_amp = i+j;
             WriteU16LittleEndian(&resp_data[offset], pixel_amp);
             offset += 2;
         }
@@ -402,7 +402,7 @@ void HandleHeartbeat(SensorProtocol *pkt) {
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
     HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
 		HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
-    HAL_UART_Transmit(&huart6, txBuffer2, total_len_resp, 200);
+    HAL_UART_Transmit(&huart6, txBuffer2, total_len_resp, 50);
     // HAL_UART_Transmit_IT(&huart6, txBuffer2, total_len_resp);
     return;
 }
