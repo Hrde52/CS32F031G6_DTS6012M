@@ -3,7 +3,7 @@
 
 #include "dts6012m.h"
 #include "main.h"
-#include "nd06av1c_app.h"
+//#include "nd06av1c_app.h"
 
 #define Unknown_STATUS                                         -1
 #define NotDetected_STATUS                                      0
@@ -72,7 +72,7 @@ extern ERR_DATA ErrData;
 extern uint32_t sensor_status;
 extern uint8_t ObjectIsDetectedFlag;
 extern DTS6012_DATA dts6012_data;
-extern ND06_DATA nd06_data;
+//extern ND06_DATA nd06_data;
 extern uint32_t DistanceThresholdLearningSuccessFlg;
 extern uint32_t dts6012DistancdLearnValue;
 extern uint32_t nd06DistancdLearnValue;

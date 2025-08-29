@@ -26,6 +26,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "rs485.h"
+#include "sensorParaTable.h"
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -97,6 +98,8 @@ int main(void)
   MX_RTC_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+	paraTable_Init();
+	
 	HAL_UART_DeInit(&huart1);
 	MX_GPIO_DTS6012_Init();
 	HAL_GPIO_WritePin(DTS6012M_EN_GPIO_Port, DTS6012M_EN_Pin, 0); 
@@ -129,9 +132,7 @@ int main(void)
 
 	HAL_UART_Receive_IT(&huart6, &rxBuffPDA[rxPDAIndex], 1);
 	
-//	HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
-//	HAL_Delay(20);
-//	HAL_UART_Transmit_IT(&huart6, data, 4);	
+	paraTable_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */

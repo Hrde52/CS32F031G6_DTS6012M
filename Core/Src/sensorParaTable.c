@@ -2,7 +2,7 @@
 #include <string.h>
 #include "stmflash.h"
 
-#define PARA_TABLE_FLASH_SAVE_ADDR 0x0800E000 /* 设置FLASH 保存地址 */
+#define PARA_TABLE_FLASH_SAVE_ADDR 0x08007C00 /* 设置FLASH 保存地址 STM32F031G6 Flash 32KB =0x08007FFF 0x08007C00 last page*/
 
 uint32_t ParaTable_Default[FF_COUNT] =
 	{
@@ -84,7 +84,7 @@ void paraTable_Init(void)
 	if (datatemp == 0XFFFFFFFF) // 说明地址为空
 	{
 		memcpy(PARA_TABLE_USE.DATE, ParaTable_Default, sizeof(ParaTable_Default));
-		paraTable_Write();
+		//paraTable_Write();
 	}
 	else // 如有参数则读取参数
 	{
