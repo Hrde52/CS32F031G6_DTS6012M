@@ -439,6 +439,10 @@ typedef struct
 #define SRAM_BASE             0x20000000UL              /*!< SRAM base address in the alias region */
 #define PERIPH_BASE           0x40000000UL              /*!< Peripheral base address in the alias region */
 
+#define FLASH_SIZE  0x00008000UL  // 32KB FLASH (0x8000 = 32768 bytes)
+#define FLASH_BANK_SIZE                     (FLASH_SIZE >> 1U)                      /*!< FLASH Bank Size  zhang add 20250828*/ 
+#define FLASH_SECTOR_SIZE                   0x2000U                                 /*!< Flash Sector Size: 8 KB */
+
 /*!< Peripheral memory map */
 #define APBPERIPH_BASE        PERIPH_BASE
 #define AHBPERIPH_BASE        (PERIPH_BASE + 0x00020000UL)
@@ -511,7 +515,7 @@ typedef struct
 #define SPI1                ((SPI_TypeDef *) SPI1_BASE)
 #define USART1              ((USART_TypeDef *) USART1_BASE)
 
-#define USART6              ((USART_TypeDef *)      USART6_BASE)
+#define USART6              ((USART_TypeDef *)      USART6_BASE)   // zhang add
 
 #define TIM16               ((TIM_TypeDef *) TIM16_BASE)
 #define TIM17               ((TIM_TypeDef *) TIM17_BASE)

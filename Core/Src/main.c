@@ -24,7 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "dts6012m.h"
+#include "rs485.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -45,16 +45,8 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-DTS6012_DATA dts6012_data[] = {0, 0, 0, 0};
 
-uint8_t rxBuffDTS[30];
-uint16_t rxIndex = 0;
-uint8_t rxData[23];
-uint8_t headerIsFoundFlag = 0;
-uint8_t dataIsReceived = 0;
 
-uint8_t rxBuffPDA[30];
-uint16_t rxPDAIndex = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -115,20 +107,21 @@ int main(void)
 	dts6012_start();
 	HAL_Delay(50);
 	dts6012_start();
-	HAL_UART_Receive_IT(&huart1, &rxBuffDTS[rxIndex], 1);		
+	HAL_UART_Receive_IT(&huart1, &rxBuffDTS[rxIndexDTS], 1);		
 	
 	MX_USART6_UART_Init();
-	//USART6_UART_Init();
+	
+	HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
+//	uint8_t txBuff[10] = {1,2,3,4,5,6,7,8,9,0};
+//	HAL_UART_Transmit(&huart6, txBuff, 10, 100);
+	
 	HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 0);
-	HAL_Delay(20);
-//	 USART6->CR1 |= USART_CR1_RXNEIE;  
-//	USART6->CR1 |= USART_CR1_UE;      
-//USART6->
+	HAL_Delay(20);     
+
 	HAL_UART_Receive_IT(&huart6, &rxBuffPDA[rxPDAIndex], 1);
 	
 //	HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
 //	HAL_Delay(20);
-//	uint8_t data[4] = {1,2,3,4};
 //	HAL_UART_Transmit_IT(&huart6, data, 4);	
   /* USER CODE END 2 */
 
@@ -137,7 +130,9 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-
+		//HAL_Delay(1000);
+//		uint8_t txBuff[10] = {1,2,3,4,5,6,7,8,9,0};
+//		HAL_UART_Transmit(&huart6, txBuff, 10, 100);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -191,95 +186,8 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void ProcessData(uint8_t *data, uint16_t length)
-{
-	if((data[0]==0xA5)&&(data[1]==0x03)&&(data[2]==0x20))
-	{
-		dts6012_data->firstPeakDistance	= (data[14]<<8) | (data[13]);
-		dts6012_data->firstPeakAmp		= (data[18]<<8) | (data[17]);
-		dts6012_data->secondPeakDistance	= (data[8]<<8) | (data[7]);
-		dts6012_data->secondPeakAmp		= (data[12]<<8) | (data[11]);		
-	}
-	
-}
 
-uint8_t RxTest[100] ;
-uint8_t index = 0;
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) 
-{   
-    /* 判断是哪个串口触发的中断 */
-    if (huart->Instance == USART1) 
-		{
-			if(index <= 99)
-			{
-				RxTest[index++] = rxBuffDTS[rxIndex];
-			}
-			else
-			{
-				index = 0;
-			}
-			
-			if (rxIndex == 0 && rxBuffDTS[0] == 0XA5) 
-			{
-					headerIsFoundFlag = 1;
-					rxIndex++;       
-			}
-			
-			else if (headerIsFoundFlag == 1) 
-			{
-				rxIndex++;
 
-				if (rxIndex >= 23) 
-				{
-						dataIsReceived = 1;
-						ProcessData(rxBuffDTS, 23);
-						dataIsReceived  = 0;
-						rxIndex = 0;
-						headerIsFoundFlag = 0;
-				}
-			}			
-			else if (rxBuffDTS[rxIndex] == 0xA5)
-			{
-					headerIsFoundFlag = 1;
-					rxIndex = 1;
-			}	
-			else
-			{
-					rxIndex = 0;
-			}
-
-			HAL_UART_Receive_IT(&huart1, &rxBuffDTS[rxIndex], 1);
-
-		}
-		
-		else if (huart->Instance == USART6) 
-		{
-			if(rxPDAIndex <= 29)
-			{
-				rxPDAIndex++;
-			}
-			else
-			{
-				rxPDAIndex = 0;
-			}
-			HAL_UART_Receive_IT(&huart6, &rxBuffPDA[rxPDAIndex], 1);	
-		}
-			
-}
-
-void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart)
-{
-  if(huart->Instance == USART6)
-  {
-    if(huart->ErrorCode & HAL_UART_ERROR_ORE) // ????
-    {
-      HAL_UART_Receive_IT(&huart6, &rxBuffPDA[rxPDAIndex], 1);
-    }
-    
-
-    huart->ErrorCode = HAL_UART_ERROR_NONE;
-  }
-}
 /* USER CODE END 4 */
 
 /**
