@@ -172,7 +172,7 @@ void HandleHandshake(SensorProtocol *pkt) {
 
     SensorProtocol *resp = (SensorProtocol *)txBuffer1;
     resp->head = HEADER;
-    resp->sj = 0x1234; 
+    resp->sj = 0x4321; 
     resp->version = 0X01;
     resp->cmd = HANDSHAKE_CMD;
 
@@ -199,7 +199,7 @@ void HandleHandshake(SensorProtocol *pkt) {
     data2[offset++] = 28; // L2
 
     // data1~data12 (ASCII "20250521")
-    const char *device_IDStr = "20250712";
+    const char *device_IDStr = "20250829";
     memcpy(data2 + offset, device_IDStr, strlen(device_IDStr));
     offset += strlen(device_IDStr);
 
@@ -265,7 +265,7 @@ void HandleHeartbeat(SensorProtocol *pkt) {
    
     SensorProtocol *resp = (SensorProtocol *)txBuffer2;
     resp->head = HEADER;
-    resp->sj = 0x2234; // GenerateRandom();
+    resp->sj = 0x5432; // GenerateRandom();
     resp->version = 0X01;
     resp->cmd = HEARTBEAT_CMD;
 
@@ -414,7 +414,7 @@ void HandleControl(SensorProtocol *pkt) {
     // data1
     uint8_t *m_data1 = pkt->data1;
     uint8_t returnSensorType = m_data1[0]; // L1 BYTE1
-    // m_data1[1]???
+    // m_data1[1]
 
     // data2
     uint8_t *m_data = &m_data1[pkt->l1]; // 2  L2
@@ -520,7 +520,7 @@ void HandleControl(SensorProtocol *pkt) {
 
     SensorProtocol *resp = (SensorProtocol *)txBuffer3;
     resp->head = HEADER;
-    resp->sj = 0x2234; // ?????????
+    resp->sj = 0x6543; // ?????????
     resp->version = 0X01;
     resp->cmd = CONTROL_CMD;
 
@@ -735,7 +735,7 @@ void HandleParamRead(SensorProtocol *pkt) {
     // ????????
     SensorProtocol *resp = (SensorProtocol *)txBuffer4;
     resp->head = HEADER;
-    resp->sj = 0x2234; // ?????????
+    resp->sj = 0x7654; // ?????????
     resp->version = 0X01;
     resp->cmd = PARAM_READ_CMD;
 
@@ -827,7 +827,6 @@ void HandleParamWrite(SensorProtocol *pkt) {
     uint8_t *m_data = &m_data1[pkt->l1];
     uint8_t groupCount = m_data[1]; // ????
     // m_data[2] = L2 =6
-    // ???��???????��?��??
     uint8_t *writeData = &m_data[4]; // 2???DATA2?????��??,pkt->data1[pkt->l1]?????L2
     uint8_t writeStatus = 0;         // 0=????1=???
 
@@ -867,7 +866,7 @@ void HandleParamWrite(SensorProtocol *pkt) {
     // ????????
     SensorProtocol *resp = (SensorProtocol *)txBuffer5;
     resp->head = HEADER;
-    resp->sj = 0x2234; // ?????????
+    resp->sj = 0x8765; // ?????????
     resp->version = 0X01;
     resp->cmd = PARAM_WRITE_CMD;
 

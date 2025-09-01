@@ -5,17 +5,17 @@
 #include <main.h>
 
 
-/* FLASHÆðÊ¼µØÖ· */
-#define STM32_FLASH_BASE        0x08000000                                  /* STM32 FLASH ÆðÊ¼µØÖ· */
-#define STM32_FLASH_SIZE        0x00008000 //0x200000                       /* STM32 FLASH ×Ü´óÐ¡ */
-#define FLASH_WAITETIME         50000                                       /* FlashµÈ´ý³¬Ê±Ê±¼ä */
+/* FLASHï¿½ï¿½Ê¼ï¿½ï¿½Ö· */
+#define STM32_FLASH_BASE        0x08000000                                  /* STM32 FLASH ï¿½ï¿½Ê¼ï¿½ï¿½Ö· */
+#define STM32_FLASH_SIZE        0x00008000 //0x200000                       /* STM32 FLASH ï¿½Ü´ï¿½Ð¡ */
+#define FLASH_WAITETIME         50000                                       /* Flashï¿½È´ï¿½ï¿½ï¿½Ê±Ê±ï¿½ï¿½ */
 
 
-/* º¯ÊýÉùÃ÷ */
-uint32_t stmflash_read_word(uint32_t faddr);                                /* ¶Á³ö×Ö */
-void stmflash_write(uint32_t waddr, uint32_t *pbuf, uint32_t length);       /* ´ÓÖ¸¶¨µØÖ·¿ªÊ¼Ð´ÈëÖ¸¶¨³¤¶ÈµÄÊý¾Ý */
-void stmflash_read(uint32_t raddr, uint32_t *pbuf, uint32_t length);        /* ´ÓÖ¸¶¨µØÖ·¿ªÊ¼¶Á³öÖ¸¶¨³¤¶ÈµÄÊý¾Ý */
-void stmflash_test_write(uint32_t waddr, uint32_t wdata);                   /* ²âÊÔÐ´Èë */
+
+uint32_t stmflash_read_word(uint32_t faddr);                                /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+HAL_StatusTypeDef  stmflash_write(uint32_t waddr, uint32_t *pbuf, uint32_t length);       /* ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ê¼Ð´ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½ï¿½ï¿½ï¿½ï¿½ */
+void stmflash_read(uint32_t raddr, uint32_t *pbuf, uint32_t length);        /* ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½Ö¸ï¿½ï¿½ï¿½ï¿½ï¿½Èµï¿½ï¿½ï¿½ï¿½ï¿½ */
+void stmflash_test_write(uint32_t waddr, uint32_t wdata);                   /* ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ */
 
 #endif
 

@@ -81,6 +81,17 @@ void paraTable_Init(void)
 {
 	uint32_t datatemp = 0;
 	datatemp = stmflash_read_word(PARA_TABLE_FLASH_SAVE_ADDR);
+	
+//	for(uint8_t i = 0; i < sizeof(ParaTable_Default); i++)
+//	{
+//		uint32_t tempDataAddr = PARA_TABLE_FLASH_SAVE_ADDR+4*i;
+//		datatemp = stmflash_read_word(tempDataAddr);
+//		if (datatemp == 0XFFFFFFFF)
+//		{
+//			break;
+//		}
+//	}
+	
 	if (datatemp == 0XFFFFFFFF) // 说明地址为空
 	{
 		uint32_t sizeTable = sizeof(ParaTable_Default);   // 8C
