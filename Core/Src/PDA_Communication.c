@@ -190,7 +190,7 @@ void HandleHandshake(SensorProtocol *pkt) {
     uint8_t *data3 = &resp_data[resp->l1];
     uint16_t offset = 0;
     data3[offset++] = 2;
-    data3[offset++] = 1;  //m_sensorType111
+    data3[offset++] = m_sensorType111;  //1
     data3[offset++] = 0;
 
     // DATA3
@@ -236,7 +236,7 @@ void HandleHandshake(SensorProtocol *pkt) {
     resp->crc = CalcCRC16((uint8_t *)&resp->cmd, resp->length);
 
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
-    //RS485_PDA_TX_ENABLE();
+    //HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
 		HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
 		HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
     HAL_UART_Transmit(&huart6, txBuffer1, total_len_resp, 100);
@@ -275,11 +275,11 @@ void HandleHeartbeat(SensorProtocol *pkt) {
     uint16_t offset = 0;
 
     // DATA1
-//    if (returnSensorType != m_sensorType111) {
-//        resp_data[offset++] = 0;
-//    } else {
-        resp_data[offset++] = 1;  // m_sensorType111
-//    }
+    if (returnSensorType != m_sensorType111) {
+        resp_data[offset++] = 0;
+    } else {
+        resp_data[offset++] = m_sensorType111;  // 1
+    }
     resp_data[offset++] = 0;
 
     resp_data[offset++] = 30;
@@ -534,7 +534,7 @@ void HandleControl(SensorProtocol *pkt) {
     }
     // resp_data[1] = 0;  // ???
 
-    // ???DATA2
+    // DATA2
     resp_data[2] = 2;
     switch (setBeginDebug) {
     case 0XAA:
@@ -616,7 +616,6 @@ void HandleControl(SensorProtocol *pkt) {
     // resp_data[16]= 0;
 
     // ???DATA7
-    // ??????
     resp_data[17] = 42;
     switch (set_distance_learn) {
     case 0XAA:
@@ -717,7 +716,7 @@ void HandleControl(SensorProtocol *pkt) {
     resp->crc = CalcCRC16((uint8_t *)&resp->cmd, resp->length);
     
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
-    RS485_PDA_TX_ENABLE();
+    HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
     HAL_UART_Transmit(&huart6, txBuffer3, total_len_resp, 100);
 		return;
 }
@@ -811,7 +810,7 @@ void HandleParamRead(SensorProtocol *pkt) {
     // ????????
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
 
-    RS485_PDA_TX_ENABLE();
+    HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
     HAL_UART_Transmit(&huart6, txBuffer4, total_len_resp, 100);
     return;
 }
@@ -903,7 +902,7 @@ void HandleParamWrite(SensorProtocol *pkt) {
 
     // ????????
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
-    RS485_PDA_TX_ENABLE();
+    HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
     HAL_UART_Transmit(&huart6, txBuffer5, total_len_resp, 100);
     return;
 }

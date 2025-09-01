@@ -7,7 +7,7 @@
 
 /* FLASH起始地址 */
 #define STM32_FLASH_BASE        0x08000000                                  /* STM32 FLASH 起始地址 */
-#define STM32_FLASH_SIZE        0x00008000 //0x200000                                    /* STM32 FLASH 总大小 */
+#define STM32_FLASH_SIZE        0x00008000 //0x200000                       /* STM32 FLASH 总大小 */
 #define FLASH_WAITETIME         50000                                       /* Flash等待超时时间 */
 
 
