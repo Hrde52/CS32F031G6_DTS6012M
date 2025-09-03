@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "rs485.h"
 #include "sensorParaTable.h"
+#include "sensorAppLogic.h"
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -140,7 +141,30 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-		
+		if (dts6012_data.firstPeakDistance < (PARA_TABLE_USE.data.dts6012StudyDistance - PARA_TABLE_USE.data.dts6012DistanceChkThreshold))
+		{
+			dts6012_data.objDetectFlag = 1;
+			ObjectIsDetectedFlag = 1;
+			IO_dts6012 = 1;
+			LEDON;
+			HAL_GPIO_WritePin(IO_OUT_GPIO_Port, IO_OUT_Pin, GPIO_PIN_RESET); // IOÊä³ö
+		}
+		else if (dts6012_data.secondPeakDistance < (PARA_TABLE_USE.data.dts6012StudyDistance - PARA_TABLE_USE.data.dts6012DistanceChkThreshold))
+		{
+			dts6012_data.objDetectFlag = 1;
+			ObjectIsDetectedFlag = 1;
+			IO_dts6012 = 1;
+			LEDON;
+			HAL_GPIO_WritePin(IO_OUT_GPIO_Port, IO_OUT_Pin, GPIO_PIN_RESET); // IOÊä³ö
+		}
+		else 
+		{
+			dts6012_data.objDetectFlag = 0;
+			ObjectIsDetectedFlag = 0;
+			IO_dts6012 = 0;
+			LEDOFF;
+			HAL_GPIO_WritePin(IO_OUT_GPIO_Port, IO_OUT_Pin, GPIO_PIN_SET); // IO¹Ø±Õ
+		}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */

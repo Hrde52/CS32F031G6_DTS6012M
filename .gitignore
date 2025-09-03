@@ -3,7 +3,7 @@
 *.uvopt
 *.uvoptx
 *.uvproj
-*.uvprojx
+# *.uvprojx
 *.uvmpw
 
 # Build outputs
