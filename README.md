@@ -1,3 +1,10 @@
+## 推送
+```bash
+git add .
+git commit -m "完成flash参数写入与读取"
+git push -u origin test
+```
+
 ## 克隆仓库：
 
 ```bash
@@ -11,9 +18,4 @@ cd CS32F031G6_DTS6012M  # 进入克隆下来的项目目录
 git switch -c test origin/test
 ```
 这个命令会自动拉取 test 分支的最新代码。
-## 
-```bash
-git add .
-git commit -m "完成flash参数写入与读取"
-git push -u origin test
-```
+
