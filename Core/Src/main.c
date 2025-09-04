@@ -20,6 +20,7 @@
 #include "main.h"
 #include "dma.h"
 #include "rtc.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -27,6 +28,7 @@
 /* USER CODE BEGIN Includes */
 #include "rs485.h"
 #include "sensorParaTable.h"
+#include "sensorAppLogic.h"
 #include <string.h>
 /* USER CODE END Includes */
 
@@ -48,6 +50,12 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
+volatile uint16_t uw1msCounter = 0; // 1ms
+volatile uint8_t u1msTaskFlag = 0;  // 1ms
+volatile uint16_t uw10msCounter = 0; // 10ms
+volatile uint8_t u10msTaskFlag = 0;  // 10ms
+volatile uint8_t u1sTaskFlag = 0;    // 1s
+
 uint8_t rxBuf[RX_BUF_SIZE];
 uint8_t dataReceived = 0; 
 uint16_t receivedLength = 0;
@@ -96,8 +104,10 @@ int main(void)
   MX_GPIO_Init();
 	MX_DMA_Init();
   MX_RTC_Init();
+	MX_TIM14_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
+	HAL_TIM_Base_Start_IT(&htim14);
 	paraTable_Init();
 	
 	HAL_UART_DeInit(&huart1);
@@ -140,7 +150,43 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+		if (u10msTaskFlag == 1)
+		{
+			u10msTaskFlag = 0;  
+		}
+
+		/* 1s */
+		if (u1sTaskFlag == 1)
+		{
+			u1sTaskFlag = 0;    
+			dts6012_start();
+		}
 		
+		
+		if (dts6012_data.firstPeakDistance < (PARA_TABLE_USE.data.dts6012StudyDistance - PARA_TABLE_USE.data.dts6012DistanceChkThreshold))
+		{
+			dts6012_data.objDetectFlag = 1;
+			ObjectIsDetectedFlag = 1;
+			IO_dts6012 = 1;
+			LEDON;
+			HAL_GPIO_WritePin(IO_OUT_GPIO_Port, IO_OUT_Pin, GPIO_PIN_RESET); // IOÊä³ö
+		}
+		else if (dts6012_data.secondPeakDistance < (PARA_TABLE_USE.data.dts6012StudyDistance - PARA_TABLE_USE.data.dts6012DistanceChkThreshold))
+		{
+			dts6012_data.objDetectFlag = 1;
+			ObjectIsDetectedFlag = 1;
+			IO_dts6012 = 1;
+			LEDON;
+			HAL_GPIO_WritePin(IO_OUT_GPIO_Port, IO_OUT_Pin, GPIO_PIN_RESET); // IOÊä³ö
+		}
+		else 
+		{
+			dts6012_data.objDetectFlag = 0;
+			ObjectIsDetectedFlag = 0;
+			IO_dts6012 = 0;
+			LEDOFF;
+			HAL_GPIO_WritePin(IO_OUT_GPIO_Port, IO_OUT_Pin, GPIO_PIN_SET); // IO¹Ø±Õ
+		}
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -194,7 +240,27 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if (htim->Instance == TIM14) 
+  {
+    u1msTaskFlag = 1;          // 1ms
+    uw1msCounter++;           // 1ms
+		
+		if (uw1msCounter >= 10)  // ??100?10ms,?1?
+    {
+      u10msTaskFlag = 1;         // 10ms
+			uw1msCounter = 0;
+      uw10msCounter++;       // 10ms
+    }
+		
+    if (uw10msCounter >= 100)  // ??100?10ms,?1?
+    {
+      u1sTaskFlag = 1;         // ??1s????
+      uw10msCounter = 0;       // ??10ms???
+    }
+  }
+}
 
 /* USER CODE END 4 */
 
