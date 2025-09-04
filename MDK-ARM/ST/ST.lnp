@@ -14,6 +14,7 @@
 "st\dma.o"
 "st\sensorapplogic.o"
 "st\tim.o"
+"st\iwdg.o"
 "st\stm32f0xx_hal_rtc.o"
 "st\stm32f0xx_hal_rtc_ex.o"
 "st\stm32f0xx_hal_rcc.o"

@@ -19,6 +19,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "dma.h"
+#include "iwdg.h"
 #include "rtc.h"
 #include "tim.h"
 #include "usart.h"
@@ -106,6 +107,7 @@ int main(void)
   MX_RTC_Init();
 	MX_TIM14_Init();
   MX_USART1_UART_Init();
+  MX_IWDG_Init();
   /* USER CODE BEGIN 2 */
 	HAL_TIM_Base_Start_IT(&htim14);
 	paraTable_Init();
@@ -113,9 +115,15 @@ int main(void)
 	HAL_UART_DeInit(&huart1);
 	MX_GPIO_DTS6012_Init();
 	HAL_GPIO_WritePin(DTS6012M_EN_GPIO_Port, DTS6012M_EN_Pin, 0); 
-	HAL_Delay(1500);
+	HAL_Delay(500);
+	HAL_IWDG_Refresh(&hiwdg);
+	HAL_Delay(1000);
+	HAL_IWDG_Refresh(&hiwdg);
 	HAL_GPIO_WritePin(DTS6012M_EN_GPIO_Port, DTS6012M_EN_Pin, 1); 
-	HAL_Delay(1500);                                            
+	HAL_Delay(500);
+	HAL_IWDG_Refresh(&hiwdg);
+	HAL_Delay(1000);
+	HAL_IWDG_Refresh(&hiwdg);                                          
 	MX_USART1_UART_Init();
 	HAL_Delay(100);
 	dts6012_start();
@@ -150,6 +158,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+		
 		if (u10msTaskFlag == 1)
 		{
 			u10msTaskFlag = 0;  
@@ -160,8 +169,8 @@ int main(void)
 		{
 			u1sTaskFlag = 0;    
 			dts6012_start();
+			HAL_IWDG_Refresh(&hiwdg);
 		}
-		
 		
 		if (dts6012_data.firstPeakDistance < (PARA_TABLE_USE.data.dts6012StudyDistance - PARA_TABLE_USE.data.dts6012DistanceChkThreshold))
 		{
@@ -247,17 +256,17 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     u1msTaskFlag = 1;          // 1ms
     uw1msCounter++;           // 1ms
 		
-		if (uw1msCounter >= 10)  // ??100?10ms,?1?
+		if (uw1msCounter >= 10)  // 10ms
     {
       u10msTaskFlag = 1;         // 10ms
 			uw1msCounter = 0;
       uw10msCounter++;       // 10ms
     }
 		
-    if (uw10msCounter >= 100)  // ??100?10ms,?1?
+    if (uw10msCounter >= 100)  // 100*10ms=1s
     {
-      u1sTaskFlag = 1;         // ??1s????
-      uw10msCounter = 0;       // ??10ms???
+      u1sTaskFlag = 1;         // 1s
+      uw10msCounter = 0;       // 10ms
     }
   }
 }
