@@ -299,10 +299,9 @@ int8_t checkSequenceMatch(const uint8_t received[36])
 
 
 uint8_t getIN_IO = 0;
-uint8_t resultUp[15] =
-    {0x5A, 0X1F, 0, 0, 0,
-     0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0};
+uint8_t resultUp[15] = {0x5A, 0X1F, 0, 0, 0,
+												 0, 0, 0, 0, 0,
+												 0, 0, 0, 0, 0};
 uint8_t resDTS = 0;
 		 
 /*
@@ -358,7 +357,6 @@ void ToolingTest()
 
 	HAL_NVIC_SystemReset();
     
-	
   while (1)
   {
     if (u10msTaskFlag == 1)

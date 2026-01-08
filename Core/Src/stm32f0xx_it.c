@@ -183,18 +183,13 @@ void USART1_IRQHandler(void)
 
   /* USER CODE END USART1_IRQn 1 */
 	if (__HAL_UART_GET_FLAG(&huart1, UART_FLAG_IDLE))
-	{
-			
-			__HAL_UART_CLEAR_IDLEFLAG(&huart1);
-			
-			HAL_UART_DMAStop(&huart1);
-			
+	{	
+			__HAL_UART_CLEAR_IDLEFLAG(&huart1);			
+			HAL_UART_DMAStop(&huart1);		
 			receivedLength = RX_BUF_SIZE - __HAL_DMA_GET_COUNTER(huart1.hdmarx);
 			
-			
 			if (receivedLength > 0 )
-			{
-					
+			{	
 					if (rxBuf[0] == 0xA5) 
 					{
 							ProcessData(rxBuf, receivedLength);  //receivedLength

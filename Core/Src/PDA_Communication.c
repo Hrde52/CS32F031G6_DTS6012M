@@ -66,28 +66,45 @@ const unsigned char auchCRCLo[] = {
     0x44, 0x84, 0x85, 0x45, 0x87, 0x47, 0x46, 0x86, 0x82, 0x42,
     0x43, 0x83, 0x41, 0x81, 0x80, 0x40};
 
-unsigned short CalcCRC16(unsigned char *puchMsg, unsigned short usDataLen) {
-    unsigned char uchCRCHi = 0xFF; // ?CRC?????
-    unsigned char uchCRCLo = 0xFF; // ?CRC?????
-    unsigned int uIndex;           // CRC
-    while (usDataLen--) {          // 
-        uIndex = uchCRCLo ^ *puchMsg++;
-        uchCRCLo = uchCRCHi ^ auchCRCHi[uIndex];
-        uchCRCHi = auchCRCLo[uIndex];
-    }
+unsigned short CalcCRC16(unsigned char *puchMsg, unsigned short usDataLen) 
+{
+	if(puchMsg == NULL || usDataLen == 0)
+	{
+		return 0;
+	}
+	
+	unsigned char uchCRCHi = 0xFF; // CRC
+	unsigned char uchCRCLo = 0xFF; // CRC
+	unsigned int uIndex;           // CRC
+	while (usDataLen--) {           
+			uIndex = uchCRCLo ^ *puchMsg++;
+			uchCRCLo = uchCRCHi ^ auchCRCHi[uIndex];
+			uchCRCHi = auchCRCLo[uIndex];
+	}
     return (uchCRCHi << 8 | uchCRCLo);
 }
 
-void WriteU32LittleEndian(uint8_t *buf, uint32_t value) {
-    buf[0] = (value >> 0) & 0xFF;
-    buf[1] = (value >> 8) & 0xFF;
-    buf[2] = (value >> 16) & 0xFF;
-    buf[3] = (value >> 24) & 0xFF;
+void WriteU32LittleEndian(uint8_t *buf, uint32_t value) 
+{
+	if(buf == NULL )
+	{
+		return;
+	}
+	buf[0] = (value >> 0) & 0xFF;
+	buf[1] = (value >> 8) & 0xFF;
+	buf[2] = (value >> 16) & 0xFF;
+	buf[3] = (value >> 24) & 0xFF;
 }
 
-void WriteU16LittleEndian(uint8_t *buf, uint32_t value) {
-    buf[0] = (value >> 0) & 0xFF;
-    buf[1] = (value >> 8) & 0xFF;
+void WriteU16LittleEndian(uint8_t *buf, uint32_t value) 
+{
+	if(buf == NULL )
+	{
+		return;
+	}
+	
+	buf[0] = (value >> 0) & 0xFF;
+	buf[1] = (value >> 8) & 0xFF;
 }
 
 uint16_t show_pktcrc;
@@ -315,8 +332,8 @@ void HandleHeartbeat(SensorProtocol *pkt) {
 
     resp_data[offset++] = 0;
     resp_data[offset++] = 0; // byte15
-    resp_data[offset++] = ObjectIsDetectedFlag;
-    resp_data[offset++] = IO_ND06 | IO_dts6012;
+    resp_data[offset++] = dts6012_data.objDetectFlag;  //ObjectIsDetectedFlag;
+    resp_data[offset++] = IO_dts6012;  //IO_ND06 | IO_dts6012;
     offset += 3;
 
 
@@ -359,7 +376,7 @@ void HandleHeartbeat(SensorProtocol *pkt) {
     WriteU16LittleEndian(&resp_data[offset], dts6012_data.firstPeakDistance);
     offset += 2;
     
-    WriteU16LittleEndian(&resp_data[offset], detectTime/*dts6012_data.firstPeakAmp*/);
+    WriteU16LittleEndian(&resp_data[offset], /*detectTime*/dts6012_data.firstPeakAmp);
     offset += 2;
     
     WriteU16LittleEndian(&resp_data[offset], dts6012_data.secondPeakDistance);
@@ -392,7 +409,7 @@ void HandleHeartbeat(SensorProtocol *pkt) {
     offset += 11;
     resp_data[offset] = 1;
 
-    resp->length = 135; // cmd 2 1 2 1 30 1 4 1 80 1 12 =
+    resp->length = 135; // cmd 2 1 2 1 30 1 4 1 80 1 12 = 135
     resp->crc = CalcCRC16((uint8_t *)&resp->cmd, resp->length);
 
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
@@ -407,6 +424,7 @@ uint8_t STOP_DistanceThresholdLearning_ReqFlg = 0;
 uint8_t STOP_ClosingTimeLearningReqFlg = 0;
 uint8_t txBuffer3[116] = {0};
 void HandleControl(SensorProtocol *pkt) {
+	/*
     // data1
     uint8_t *m_data1 = pkt->data1;
     uint8_t returnSensorType = m_data1[0]; // L1 BYTE1
@@ -641,11 +659,11 @@ void HandleControl(SensorProtocol *pkt) {
     // WriteU16LittleEndian(&resp_data[22], PARA_TABLE_USE.data.nd06StudyDistance);
     // 7-10 24-27
     //  11-42 28 -59
-    uint8_t idx = 28;
-    for (uint8_t i = 0; i < 16; i++) {
-        WriteU16LittleEndian(&resp_data[idx], PARA_TABLE_USE.data.cargoLift_nd06StudyPixelDistance[i]);
-        idx += 2;
-    }
+//    uint8_t idx = 28;
+//    for (uint8_t i = 0; i < 16; i++) {
+//        WriteU16LittleEndian(&resp_data[idx], PARA_TABLE_USE.data.cargoLift_nd06StudyPixelDistance[i]);
+//        idx += 2;
+//    }
 
     // DATA8
     resp_data[60] = 10; // +43
@@ -667,7 +685,6 @@ void HandleControl(SensorProtocol *pkt) {
     }
 
     // resp_data[65] = 0; //65-70???
-
     // DATA9
     resp_data[71] = 10;
     // 72-81
@@ -684,6 +701,7 @@ void HandleControl(SensorProtocol *pkt) {
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
     HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
     HAL_UART_Transmit(&huart6, txBuffer3, total_len_resp, 100);
+		*/
 		return;
 }
 
@@ -695,13 +713,13 @@ void HandleParamRead(SensorProtocol *pkt) {
     uint8_t returnSensorType = m_data1[0];
     // data2
     uint8_t *m_data = &m_data1[pkt->l1];
-    // DATA1???1
+    // DATA1 1
     uint8_t groupCount = m_data[1];
 
-    // 
+    // SENSOR -> PDA
     SensorProtocol *resp = (SensorProtocol *)txBuffer4;
     resp->head = HEADER;
-    resp->sj = 0x7654; // 
+    resp->sj = 0x7654;          // 
     resp->version = 0X01;
     resp->cmd = PARAM_READ_CMD;
 
@@ -732,7 +750,18 @@ void HandleParamRead(SensorProtocol *pkt) {
     //  DATA2 44
     uint8_t *data2 = &resp_data2[9]; // DATA2  DATA1  // 10
     offset = 0;
-
+		data2[offset++] = 44; // L2
+		for (int i = 2; i <= 6; i++) 
+		{
+				uint32_t param = PARA_TABLE_USE.DATE[i];
+				WriteU32LittleEndian(&data2[offset], param);
+				offset += 4;
+		}
+		offset += 4;
+		// CRC
+		resp->length = 60;
+		resp->crc = CalcCRC16((uint8_t *)&resp->cmd, resp->length);
+/*
     switch (PARA_TABLE_USE.data.functionChioce) 
 		{
     case 0x33:
@@ -745,7 +774,7 @@ void HandleParamRead(SensorProtocol *pkt) {
             WriteU32LittleEndian(&data2[offset], param);
             offset += 4;
         }
-        WriteU32LittleEndian(&data2[offset], PARA_TABLE_USE.data.closingDoorTimeThreshold);
+//        WriteU32LittleEndian(&data2[offset], PARA_TABLE_USE.data.closingDoorTimeThreshold);
         offset += 4;
         // CRC
         resp->length = 60;
@@ -758,7 +787,7 @@ void HandleParamRead(SensorProtocol *pkt) {
         resp->length = 2 + 1 + resp->l1 + 1;
         break;
     }
-
+*/
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
 
     HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
@@ -771,55 +800,55 @@ void HandleParamWrite(SensorProtocol *pkt) {
     // data1
     uint8_t *m_data1 = pkt->data1;
     uint8_t returnSensorType = m_data1[0];
-    // m_data1[1]  // ???
+    // m_data1[1]  // 
 
     // data2
     uint8_t *m_data = &m_data1[pkt->l1];
-    uint8_t groupCount = m_data[1]; // ????
+    uint8_t groupCount = m_data[1]; // 
     // m_data[2] = L2 =6
-    uint8_t *writeData = &m_data[4]; // 2???DATA2?????��??,pkt->data1[pkt->l1]?????L2
-    uint8_t writeStatus = 0;         // 0=????1=???
+    uint8_t *writeData = &m_data[4]; // DATA2,pkt->data1[pkt->l1  L2
+    uint8_t writeStatus = 0;         // 
 
     // F0.11 = 300
-    uint8_t groupIndex = writeData[0];    // ????11
-    uint8_t internalIndex = writeData[1]; // ??????0
+    uint8_t groupIndex = writeData[0];    // 11
+    uint8_t internalIndex = writeData[1]; // 0
     uint32_t funcValue = (writeData[5] << 24) | (writeData[4] << 16) |
                          (writeData[3] << 8) | writeData[2];
 
     // 
-    // 
-    if (PARA_TABLE_USE.data.functionChioce == 0x33 && groupIndex == 0 && internalIndex >= 3 && internalIndex <= 6) // 13
+    if (PARA_TABLE_USE.data.functionChioce == 0x33 && groupIndex == 0 && internalIndex >= 1 && internalIndex <= 6) // 13
     {
-        PARA_TABLE_USE.DATE[internalIndex ] = funcValue;
-        writeStatus = 1;
-    }
-		/*
-		else if (PARA_TABLE_USE.data.functionChioce == 0x11 && groupIndex == 0 && internalIndex == 13) // F1.13????????????????
-    {
-        PARA_TABLE_USE.DATE[internalIndex - 1] = funcValue;
-    }
-
-    else if (PARA_TABLE_USE.data.functionChioce == 0x22 && groupIndex == 0 && internalIndex >= 14 && internalIndex <= 36) {
-        PARA_TABLE_USE.DATE[internalIndex - 2] = funcValue;
-        writeStatus = 1;
-    } 
-		*/
-		else if (groupIndex == 0 && internalIndex == 2) {
+			if(funcValue > 0 && funcValue <= 6000)
+			{
         PARA_TABLE_USE.DATE[internalIndex - 1] = funcValue;
         writeStatus = 1;
-    } else {
+			}
+    }
+/*
+		else if (groupIndex == 0 && internalIndex == 2) 
+		{
+			if(funcValue > 0)
+			{
+        PARA_TABLE_USE.DATE[internalIndex - 1] = funcValue;
+        writeStatus = 1;
+			}
+    }
+*/		
+		else 
+		{
         writeStatus = 0; // 
     }
 
     // Flash
-    if (writeStatus) {
+    if (writeStatus) 
+		{
         paraTable_Write();
     }
 
     // Sensor ———》PDA
     SensorProtocol *resp = (SensorProtocol *)txBuffer5;
     resp->head = HEADER;
-    resp->sj = 0x8765; // ?????????
+    resp->sj = 0x8765; // 
     resp->version = 0X01;
     resp->cmd = PARAM_WRITE_CMD;
 
@@ -842,7 +871,7 @@ void HandleParamWrite(SensorProtocol *pkt) {
     resp_data[offset++] = groupCount;
     resp_data[offset++] = 0;
 
-    // ???DATA3
+    // DATA3
     uint8_t *data2 = &resp_data[offset]; // DATA2 ????DATA1 2+1+1
     offset = 0;
     data2[offset++] = 6;                  // 6???
@@ -852,7 +881,6 @@ void HandleParamWrite(SensorProtocol *pkt) {
     resp->length = 15;
     resp->crc = CalcCRC16((uint8_t *)&resp->cmd, resp->length);
 
-    // 
     uint16_t total_len_resp = sizeof(SensorProtocol) - 3 + resp->length;
     HAL_GPIO_WritePin(m485A_TE_GPIO_Port, m485A_TE_Pin, 1);
     HAL_UART_Transmit(&huart6, txBuffer5, total_len_resp, 100);
